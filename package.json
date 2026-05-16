@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "build": "turbo build",
-    "test": "turbo test"
+    "test": "turbo test",
+    "ver": "pnpm -r version"
   },
   "devDependencies": {
     "@shrinktofit/eslint-config": "^0.0.3",
