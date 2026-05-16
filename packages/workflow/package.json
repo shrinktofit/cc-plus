@@ -1,0 +1,12 @@
+{
+  "name": "@cc-plus/workflow",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./tsconfig/*": "./tsconfig/*.json"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.17"
+  }
+}

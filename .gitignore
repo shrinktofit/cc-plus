@@ -1,0 +1,6 @@
+node_modules
+*.tsbuildinfo
+lib
+lerna-debug.log
+.turbo
+coverage

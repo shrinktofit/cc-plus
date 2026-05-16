@@ -1,0 +1,13 @@
+{
+  "extends": "@cc-plus/workflow/tsconfig/test",
+  "include": ["."],
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "lib",
+    "types": [
+      "vitest"
+    ],
+    "skipLibCheck": true
+  },
+  "references": [{"path": ".."}]
+}
