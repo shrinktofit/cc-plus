@@ -1,0 +1,521 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`-0 1`] = `
+{
+  "value": -0,
+  "version": "202605",
+}
+`;
+
+exports[`-Infinity 1`] = `
+{
+  "value": {
+    "$": "intrinsic.-inf",
+  },
+  "version": "202605",
+}
+`;
+
+exports[`-Infinity with ieee754 assumptions 1`] = `
+{
+  "value": -Infinity,
+  "version": "202605",
+}
+`;
+
+exports[`BigInt64Array 1`] = `
+{
+  "value": {
+    "$": [
+      "es.BigInt64Array",
+      [
+        -1,
+        0,
+        1,
+      ],
+    ],
+  },
+  "version": "202605",
+}
+`;
+
+exports[`BigUint64Array 1`] = `
+{
+  "value": {
+    "$": [
+      "es.BigUint64Array",
+      [
+        0,
+        1,
+        "18446744073709551615",
+      ],
+    ],
+  },
+  "version": "202605",
+}
+`;
+
+exports[`Date 1`] = `
+{
+  "value": {
+    "$": [
+      "es.Date",
+      1778938200000,
+    ],
+  },
+  "version": "202605",
+}
+`;
+
+exports[`Float32Array 1`] = `
+{
+  "value": {
+    "$": [
+      "es.Float32Array",
+      [
+        0.5,
+        -1.5,
+        2.25,
+      ],
+    ],
+  },
+  "version": "202605",
+}
+`;
+
+exports[`Float64Array 1`] = `
+{
+  "value": {
+    "$": [
+      "es.Float64Array",
+      [
+        0.5,
+        -1.5,
+        9007199254740991,
+      ],
+    ],
+  },
+  "version": "202605",
+}
+`;
+
+exports[`Infinity 1`] = `
+{
+  "value": {
+    "$": "intrinsic.inf",
+  },
+  "version": "202605",
+}
+`;
+
+exports[`Infinity with yaml assumptions 1`] = `
+{
+  "value": Infinity,
+  "version": "202605",
+}
+`;
+
+exports[`Int8Array 1`] = `
+{
+  "value": {
+    "$": [
+      "es.Int8Array",
+      [
+        -1,
+        0,
+        1,
+      ],
+    ],
+  },
+  "version": "202605",
+}
+`;
+
+exports[`Int16Array 1`] = `
+{
+  "value": {
+    "$": [
+      "es.Int16Array",
+      [
+        -32768,
+        0,
+        32767,
+      ],
+    ],
+  },
+  "version": "202605",
+}
+`;
+
+exports[`Int32Array 1`] = `
+{
+  "value": {
+    "$": [
+      "es.Int32Array",
+      [
+        -2147483648,
+        0,
+        2147483647,
+      ],
+    ],
+  },
+  "version": "202605",
+}
+`;
+
+exports[`Map 1`] = `
+{
+  "value": {
+    "$": [
+      "es.Map",
+      [
+        [
+          "string",
+          "value",
+        ],
+        [
+          123,
+          true,
+        ],
+        [
+          "nested",
+          {
+            "ok": true,
+          },
+        ],
+      ],
+    ],
+  },
+  "version": "202605",
+}
+`;
+
+exports[`NaN 1`] = `
+{
+  "value": {
+    "$": "intrinsic.nan",
+  },
+  "version": "202605",
+}
+`;
+
+exports[`NaN with json5 assumptions 1`] = `
+{
+  "value": NaN,
+  "version": "202605",
+}
+`;
+
+exports[`RegExp 1`] = `
+{
+  "value": {
+    "$": [
+      "es.RegExp",
+      {
+        "flags": "giu",
+        "source": "hello\\s+world",
+      },
+    ],
+  },
+  "version": "202605",
+}
+`;
+
+exports[`Set 1`] = `
+{
+  "value": {
+    "$": [
+      "es.Set",
+      [
+        "string",
+        123,
+        {
+          "ok": true,
+        },
+      ],
+    ],
+  },
+  "version": "202605",
+}
+`;
+
+exports[`Uint8Array 1`] = `
+{
+  "value": {
+    "$": [
+      "es.Uint8Array",
+      [
+        0,
+        1,
+        255,
+      ],
+    ],
+  },
+  "version": "202605",
+}
+`;
+
+exports[`Uint8ClampedArray 1`] = `
+{
+  "value": {
+    "$": [
+      "es.Uint8ClampedArray",
+      [
+        0,
+        128,
+        255,
+      ],
+    ],
+  },
+  "version": "202605",
+}
+`;
+
+exports[`Uint16Array 1`] = `
+{
+  "value": {
+    "$": [
+      "es.Uint16Array",
+      [
+        0,
+        65535,
+      ],
+    ],
+  },
+  "version": "202605",
+}
+`;
+
+exports[`Uint32Array 1`] = `
+{
+  "value": {
+    "$": [
+      "es.Uint32Array",
+      [
+        0,
+        4294967295,
+      ],
+    ],
+  },
+  "version": "202605",
+}
+`;
+
+exports[`array 1`] = `
+{
+  "value": [
+    "hello",
+    123,
+    true,
+    {
+      "$": [
+        "es.BigInt",
+        "123",
+      ],
+    },
+    null,
+    undefined,
+  ],
+  "version": "202605",
+}
+`;
+
+exports[`bigint 1`] = `
+{
+  "value": {
+    "$": [
+      "es.BigInt",
+      "12345678901234567890",
+    ],
+  },
+  "version": "202605",
+}
+`;
+
+exports[`boolean 1`] = `
+{
+  "value": true,
+  "version": "202605",
+}
+`;
+
+exports[`boolean 2`] = `
+{
+  "value": false,
+  "version": "202605",
+}
+`;
+
+exports[`circular value 1`] = `
+{
+  "sharedValues": [
+    {
+      "b": {
+        "a": {
+          "$": 0,
+        },
+      },
+    },
+  ],
+  "value": {
+    "$": 0,
+  },
+  "version": "202605",
+}
+`;
+
+exports[`finite number 1`] = `
+{
+  "value": 123.5,
+  "version": "202605",
+}
+`;
+
+exports[`fixed custom class field stores custom payload directly 1`] = `
+{
+  "value": {
+    "$": "test.EventRecord",
+    "createdAt": 1778938200000,
+  },
+  "version": "202605",
+}
+`;
+
+exports[`fixed registered class field omits nested type info 1`] = `
+{
+  "value": {
+    "$": "test.Transform",
+    "point": {
+      "x": 1,
+      "y": 2,
+    },
+  },
+  "version": "202605",
+}
+`;
+
+exports[`function is unsupported 1`] = `[Error: Unknown type: function]`;
+
+exports[`nonShared registered class is serialized by value 1`] = `
+{
+  "value": {
+    "a": {
+      "$": "test.NonSharedPoint",
+      "x": 42,
+    },
+    "b": {
+      "$": "test.NonSharedPoint",
+      "x": 42,
+    },
+  },
+  "version": "202605",
+}
+`;
+
+exports[`null 1`] = `
+{
+  "value": null,
+  "version": "202605",
+}
+`;
+
+exports[`plain object 1`] = `
+{
+  "value": {
+    "array": [
+      1,
+      2,
+      3,
+    ],
+    "bigint": {
+      "$": [
+        "es.BigInt",
+        "123",
+      ],
+    },
+    "boolean": true,
+    "null": null,
+    "number": 123,
+    "object": {
+      "nested": true,
+    },
+    "string": "hello",
+  },
+  "version": "202605",
+}
+`;
+
+exports[`plain object omits undefined fields 1`] = `
+{
+  "value": {
+    "keep": 1,
+  },
+  "version": "202605",
+}
+`;
+
+exports[`registered class fields 1`] = `
+{
+  "value": {
+    "$": "test.Player",
+    "level": 7,
+    "name": "Ada",
+  },
+  "version": "202605",
+}
+`;
+
+exports[`registered class is shared by default 1`] = `
+{
+  "sharedValues": [
+    {
+      "$": "test.SharedPoint",
+      "x": 42,
+    },
+  ],
+  "value": {
+    "a": {
+      "$": 0,
+    },
+    "b": {
+      "$": 0,
+    },
+  },
+  "version": "202605",
+}
+`;
+
+exports[`shared plain object 1`] = `
+{
+  "sharedValues": [
+    {
+      "value": 42,
+    },
+  ],
+  "value": {
+    "a": {
+      "$": 0,
+    },
+    "b": {
+      "$": 0,
+    },
+  },
+  "version": "202605",
+}
+`;
+
+exports[`string 1`] = `
+{
+  "value": "hello",
+  "version": "202605",
+}
+`;
+
+exports[`symbol is unsupported 1`] = `[Error: Unknown type: symbol]`;
+
+exports[`undefined 1`] = `
+{
+  "value": undefined,
+  "version": "202605",
+}
+`;

@@ -1,0 +1,17 @@
+{
+  "extends": "@cc-plus/workflow/tsconfig/test",
+  "include": ["."],
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "lib",
+    "types": [
+      "vitest",
+      "@cocos/creator-types/engine",
+    ],
+    "skipLibCheck": true,
+    "paths": {
+      "@src/*": ["../src/*"],
+    }
+  },
+  "references": [{"path": ".."}]
+}

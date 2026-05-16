@@ -1,0 +1,27 @@
+{
+  "name": "@cc-plus/ser",
+  "version": "0.0.0",
+  "type": "module",
+  "files": [
+    "lib/**/*{.js,.d.ts}"
+  ],
+  "exports": {
+    ".": "./lib/index.js"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "build": "tsc -b",
+    "dev": "tsc --watch",
+    "test:compile": "tsc -b test/tsconfig.json"
+  },
+  "devDependencies": {
+    "@cc-plus/workflow": "workspace:*",
+    "@cocos/creator-types": "catalog:",
+    "@feb/cc-test": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "dependencies": {
+    "tiny-invariant": "^1.3.3"
+  }
+}

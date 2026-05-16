@@ -1,0 +1,12 @@
+{
+  "extends": "@cc-plus/workflow/tsconfig/lib",
+  "include": ["src"],
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "lib",
+    "skipLibCheck": true,
+    "types": [
+      "@cocos/creator-types/engine",
+    ],
+  }
+}

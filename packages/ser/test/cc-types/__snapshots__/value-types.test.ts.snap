@@ -1,0 +1,19 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Vec3 1`] = `
+{
+  "value": {
+    "value": {
+      "$": [
+        "cc.Vec3",
+        [
+          1,
+          2,
+          3,
+        ],
+      ],
+    },
+  },
+  "version": "202605",
+}
+`;

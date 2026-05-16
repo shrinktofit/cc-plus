@@ -6,6 +6,12 @@ settings:
 
 catalogs:
   default:
+    '@cocos/creator-types':
+      specifier: ^3.8.6
+      version: 3.8.7
+    '@feb/cc-test':
+      specifier: ^0.0.18
+      version: 0.0.18
     '@vitest/coverage-v8':
       specifier: ^4.1.6
       version: 4.1.6
@@ -52,6 +58,28 @@ importers:
         specifier: 'catalog:'
         version: 4.1.6(@types/node@22.19.19)(@vitest/coverage-v8@4.1.6)(vite@8.0.13(@types/node@22.19.19))
 
+  packages/ser:
+    dependencies:
+      tiny-invariant:
+        specifier: ^1.3.3
+        version: 1.3.3
+    devDependencies:
+      '@cc-plus/workflow':
+        specifier: workspace:*
+        version: link:../workflow
+      '@cocos/creator-types':
+        specifier: 'catalog:'
+        version: 3.8.7
+      '@feb/cc-test':
+        specifier: 'catalog:'
+        version: 0.0.18(vitest@4.1.6)
+      typescript:
+        specifier: 'catalog:'
+        version: 6.0.3
+      vitest:
+        specifier: 'catalog:'
+        version: 4.1.6(@types/node@22.19.19)(@vitest/coverage-v8@4.1.6)(vite@8.0.13(@types/node@22.19.19))
+
   packages/workflow:
     devDependencies:
       '@types/node':
@@ -80,6 +108,9 @@ packages:
   '@bcoe/v8-coverage@1.0.2':
     resolution: {integrity: sha512-6zABk/ECA/QYSCQ1NGiVwwbQerUCZ+TQbp64Q3AgmfNvurHH0j8TtXa1qbShXA6qqkpAj4V5W8pP6mLe1mcMqA==}
     engines: {node: '>=18'}
+
+  '@cocos/creator-types@3.8.7':
+    resolution: {integrity: sha512-QTtuC+w1s1yQ8DPlgFSiIGS+Pko6v2QdrrQRN8/SttEBo53JjyXEWHXpRkg1lGiHq0u/aadm0cN/Y4jtEmis/w==}
 
   '@emnapi/core@1.10.0':
     resolution: {integrity: sha512-yq6OkJ4p82CAfPl0u9mQebQHKPJkY7WrIuk205cTYnYe+k2Z8YBh11FrbRG/H6ihirqcacOgl2BIO8oyMQLeXw==}
@@ -135,6 +166,14 @@ packages:
   '@eslint/plugin-kit@0.4.1':
     resolution: {integrity: sha512-43/qtrDUokr7LJqoF2c3+RInu/t4zfrpYdoSDfYyhg52rwLV6TnOvdG4fXm7IkSB3wErkcmJS9iEhjVtOSEjjA==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
+
+  '@feb/bundle-wasm@0.0.16':
+    resolution: {integrity: sha512-mziu8cy5f+q0d1raUaeMpIauwuabKt7Egp/jVNpgGcCNm4rBJc54ngvcQpJoksjLlR54fcVSuCIForUTk5WGaw==}
+
+  '@feb/cc-test@0.0.18':
+    resolution: {integrity: sha512-PCoC56fFFRdP78Vl/W8TVohj+5/tkUvZNtT5ui0xAUVn7x3sEK1293o4Oh64C5hvaBxlusVmbSheRXMr5WKUmg==}
+    peerDependencies:
+      vitest: '*'
 
   '@humanfs/core@0.19.2':
     resolution: {integrity: sha512-UhXNm+CFMWcbChXywFwkmhqjs3PRCmcSa/hfBgLIb7oQ5HNb1wS0icWsGtSAUNgefHeI+eBrA8I1fxmbHsGdvA==}
@@ -553,12 +592,25 @@ packages:
       supports-color:
         optional: true
 
+  dedent@1.7.2:
+    resolution: {integrity: sha512-WzMx3mW98SN+zn3hgemf4OzdmyNhhhKz5Ay0pUfQiMQ3e1g+xmTJWp/pKdwKVXhdSkAEGIIzqeuWrL3mV/AXbA==}
+    peerDependencies:
+      babel-plugin-macros: ^3.1.0
+    peerDependenciesMeta:
+      babel-plugin-macros:
+        optional: true
+
   deep-is@0.1.4:
     resolution: {integrity: sha512-oIPzksmTg4/MriiaYGO+okXDT7ztn/w3Eptv/+gSIdMdKsJo0u4CfYNFJPy+4SKMuCqGw2wxnA+URMg3t8a/bQ==}
 
   detect-libc@2.1.2:
     resolution: {integrity: sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ==}
     engines: {node: '>=8'}
+
+  ejs@5.0.2:
+    resolution: {integrity: sha512-IpbUaI/CAW86l3f+T8zN0iggSc0LmMZLcIW5eRVStLVNCoTXkE0YlncbbH50fp8Cl6zHIky0sW2uUbhBqGw0Jw==}
+    engines: {node: '>=0.12.18'}
+    hasBin: true
 
   electron-to-chromium@1.5.357:
     resolution: {integrity: sha512-NHlTIQDK8fmVwHwuIzmXYEJ1Ewq3D9wDNc0cWXxDGysP6Pb21giwGNkxiTifyKy/4SoPuN5l6GLP1W9Sv7zB2g==}
@@ -1275,6 +1327,8 @@ snapshots:
 
   '@bcoe/v8-coverage@1.0.2': {}
 
+  '@cocos/creator-types@3.8.7': {}
+
   '@emnapi/core@1.10.0':
     dependencies:
       '@emnapi/wasi-threads': 1.2.1
@@ -1345,6 +1399,18 @@ snapshots:
     dependencies:
       '@eslint/core': 0.17.0
       levn: 0.4.1
+
+  '@feb/bundle-wasm@0.0.16':
+    dependencies:
+      ejs: 5.0.2
+
+  '@feb/cc-test@0.0.18(vitest@4.1.6)':
+    dependencies:
+      '@feb/bundle-wasm': 0.0.16
+      dedent: 1.7.2
+      vitest: 4.1.6(@types/node@22.19.19)(@vitest/coverage-v8@4.1.6)(vite@8.0.13(@types/node@22.19.19))
+    transitivePeerDependencies:
+      - babel-plugin-macros
 
   '@humanfs/core@0.19.2':
     dependencies:
@@ -1743,9 +1809,13 @@ snapshots:
     dependencies:
       ms: 2.1.3
 
+  dedent@1.7.2: {}
+
   deep-is@0.1.4: {}
 
   detect-libc@2.1.2: {}
+
+  ejs@5.0.2: {}
 
   electron-to-chromium@1.5.357: {}
 
