@@ -264,7 +264,6 @@ it('fixed registered class field omits nested type info', () => {
     id: 'test.Transform',
     fields: [
       ['point', {
-        type: Point,
         fixed: true,
       }],
     ],
@@ -290,7 +289,6 @@ it('fixed custom class field stores custom payload directly', () => {
     id: 'test.EventRecord',
     fields: [
       ['createdAt', {
-        type: Date,
         fixed: true,
       }],
     ],
@@ -304,6 +302,62 @@ it('fixed custom class field stores custom payload directly', () => {
   expect(deserialized).toBeInstanceOf(EventRecord);
   expect(deserialized.createdAt).toBeInstanceOf(Date);
   expect(deserialized.createdAt.getTime()).toBe(given.createdAt.getTime());
+});
+
+it('fixed array field omits element type info', () => {
+  class PointListItem {
+    x = 0;
+  }
+
+  class PointList {
+    points = [] as PointListItem[];
+  }
+
+  registerClassMeta(PointListItem, {
+    id: 'test.PointListItem',
+    fields: ['x'],
+  });
+  registerClassMeta(PointList, {
+    id: 'test.PointList',
+    fields: [
+      ['points', {
+        fixed: true,
+        array: {
+          type: PointListItem,
+        },
+      }],
+    ],
+  });
+
+  const item = new PointListItem();
+  item.x = 7;
+  const given = new PointList();
+  given.points = [item];
+
+  const deserialized = expectSerializedSnapshotAndDeserialize(given) as PointList;
+
+  expect(deserialized).toBeInstanceOf(PointList);
+  expect(deserialized.points[0]).toBeInstanceOf(PointListItem);
+  expect(deserialized.points[0].x).toBe(7);
+});
+
+it('fixed field throws when runtime value has no object type', () => {
+  class MaybeChild {
+    child: Date | null = null;
+  }
+
+  registerClassMeta(MaybeChild, {
+    id: 'test.MaybeChild',
+    fields: [
+      ['child', {
+        fixed: true,
+      }],
+    ],
+  });
+
+  const serialized = serialize(new MaybeChild());
+  expect(serialized).toMatchSnapshot();
+  expect(() => deserialize(serialized)).toThrowErrorMatchingSnapshot();
 });
 
 it('registered class is shared by default', () => {

@@ -371,6 +371,20 @@ exports[`finite number 1`] = `
 }
 `;
 
+exports[`fixed array field omits element type info 1`] = `
+{
+  "value": {
+    "$": "test.PointList",
+    "points": [
+      {
+        "x": 7,
+      },
+    ],
+  },
+  "version": "202605",
+}
+`;
+
 exports[`fixed custom class field stores custom payload directly 1`] = `
 {
   "value": {
@@ -380,6 +394,18 @@ exports[`fixed custom class field stores custom payload directly 1`] = `
   "version": "202605",
 }
 `;
+
+exports[`fixed field throws when runtime value has no object type 1`] = `
+{
+  "value": {
+    "$": "test.MaybeChild",
+    "child": null,
+  },
+  "version": "202605",
+}
+`;
+
+exports[`fixed field throws when runtime value has no object type 2`] = `[Error: Invariant failed: Fixed field must have an object runtime value]`;
 
 exports[`fixed registered class field omits nested type info 1`] = `
 {

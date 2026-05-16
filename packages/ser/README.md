@@ -78,13 +78,13 @@ registerClassMeta(Player, {
 });
 ```
 
-Use `fixed: true` for fields whose runtime type is known from schema. This omits nested type information:
+Use `fixed: true` for fields whose runtime type is invariant. This omits nested type information. For object fields, the deserializer infers the fixed type from the field's current runtime value after constructing the owning object, so no explicit `type` is needed:
 
 ```ts
 registerClassMeta(EventRecord, {
   id: 'game.EventRecord',
   fields: [
-    ['createdAt', { type: Date, fixed: true }],
+    ['createdAt', { fixed: true }],
   ],
 });
 ```
@@ -96,6 +96,19 @@ Then `createdAt` stores the Date payload directly:
   "$": "game.EventRecord",
   "createdAt": 1778938200000
 }
+```
+
+The owning class must initialize fixed object fields with a non-null object value. If the current value is `null`, `undefined`, or otherwise does not expose an object constructor, deserialization throws because the fixed type cannot be inferred.
+
+Fixed array fields need an element type because an empty array cannot reveal its element constructor:
+
+```ts
+registerClassMeta(PointList, {
+  id: 'game.PointList',
+  fields: [
+    ['points', { fixed: true, array: { type: Point } }],
+  ],
+});
 ```
 
 ## Backend Assumptions

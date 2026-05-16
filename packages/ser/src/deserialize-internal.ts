@@ -17,9 +17,9 @@ class DeserializeInternalContext {
     })) ?? [];
   }
 
-  deserializeValue(value: SerProtocol.Value, fieldMeta?: FieldMeta): unknown {
+  deserializeValue(value: SerProtocol.Value, fieldMeta?: FieldMeta, fixedRuntimeValue?: unknown): unknown {
     if (fieldMeta?.fixed) {
-      return this._deserializeFixedValue(value, fieldMeta);
+      return this._deserializeFixedValue(value, fieldMeta, fixedRuntimeValue);
     }
 
     if (!isObject(value)) {
@@ -37,8 +37,12 @@ class DeserializeInternalContext {
     return this._deserializeShareableValue(value);
   }
 
-  private _deserializeFixedValue(value: SerProtocol.Value, fieldMeta: FieldMeta): unknown {
-    const constructor = getFixedFieldConstructor(fieldMeta);
+  private _deserializeFixedValue(value: SerProtocol.Value, fieldMeta: FieldMeta, fixedRuntimeValue: unknown): unknown {
+    if (fieldMeta.array) {
+      return this._deserializeFixedArrayValue(value, fieldMeta, fixedRuntimeValue);
+    }
+
+    const constructor = getFixedFieldConstructorFromRuntimeValue(fixedRuntimeValue);
     const meta = getClassMeta(constructor);
     invariant(meta, 'Fixed field type must be registered');
 
@@ -65,6 +69,19 @@ class DeserializeInternalContext {
     const target = new constructor();
     this._populateObjectFields(value, target, meta.fields);
     return target;
+  }
+
+  private _deserializeFixedArrayValue(value: SerProtocol.Value, fieldMeta: FieldMeta, fixedRuntimeValue: unknown): unknown {
+    invariant(Array.isArray(fixedRuntimeValue), 'Fixed array field must have an array runtime value');
+    invariant(Array.isArray(value), 'Fixed array field serialized value must be an array');
+    const elementConstructor = getFixedArrayElementConstructor(fieldMeta);
+    const result = new Array(value.length);
+    for (let i = 0; i < value.length; i++) {
+      result[i] = this._deserializeFixedValue(value[i], {
+        fixed: true,
+      }, new elementConstructor());
+    }
+    return result;
   }
 
   private _deserializeSharedValue(index: number, fixedConstructor?: new (...args: any[]) => any): unknown {
@@ -163,7 +180,8 @@ class DeserializeInternalContext {
 
   private _populateObjectFields(source: object, target: unknown, fieldsMeta?: Record<string, FieldMeta>) {
     for (const [key, value] of Object.entries(source)) {
-      (target as Record<string, unknown>)[key] = this.deserializeValue(value as SerProtocol.Value, fieldsMeta?.[key]);
+      const targetRecord = target as Record<string, unknown>;
+      targetRecord[key] = this.deserializeValue(value as SerProtocol.Value, fieldsMeta?.[key], targetRecord[key]);
     }
   }
 
@@ -206,10 +224,17 @@ function omitTypeField(value: SerProtocol.TypedObject): Record<string, SerProtoc
   return fields;
 }
 
-function getFixedFieldConstructor(fieldMeta: FieldMeta): new (...args: any[]) => any {
-  invariant(fieldMeta.type, 'Fixed field must specify a type');
-  invariant(typeof fieldMeta.type === 'function', 'Fixed field type must be a constructor');
-  return fieldMeta.type;
+function getFixedFieldConstructorFromRuntimeValue(value: unknown): new (...args: any[]) => any {
+  invariant(isObject(value), 'Fixed field must have an object runtime value');
+  const constructor = Object.getPrototypeOf(value)?.constructor;
+  invariant(typeof constructor === 'function', 'Fixed field runtime value must have a constructor');
+  return constructor;
+}
+
+function getFixedArrayElementConstructor(fieldMeta: FieldMeta): new (...args: any[]) => any {
+  invariant(fieldMeta.array, 'Fixed array field must specify array metadata');
+  invariant(typeof fieldMeta.array.type === 'function', 'Fixed array field element type must be a constructor');
+  return fieldMeta.array.type;
 }
 
 function deserializeIntrinsicValue(id: string): unknown {

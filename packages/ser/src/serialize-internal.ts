@@ -324,6 +324,9 @@ function serializeObject(ctx: SerializeInternalContext, obj: object, knownType?:
     if (fieldValue === undefined) {
       continue;
     }
+    if (fieldMeta.fixed === true && Array.isArray(fieldValue)) {
+      invariant(fieldMeta.array && typeof fieldMeta.array.type === 'function', 'Fixed array field must specify an element type');
+    }
     result[fieldKey] = serializeValue(ctx, fieldValue, fieldMeta.fixed === true);
   }
   return result;
