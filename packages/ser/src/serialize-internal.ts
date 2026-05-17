@@ -81,7 +81,7 @@ class SerializeInternalContext {
     return undefined;
   }
 
-  private _sharedValues: Map<object, SerProtocol.ShareableValue | null> = new Map();
+  private _sharedValues = new Map<object, SerProtocol.ShareableValue | null>();
 
   private _countRefs(ctx: FinalizeContext, value: CircularValue) {
     if (typeof value !== 'object' || !value) {
@@ -106,7 +106,7 @@ class SerializeInternalContext {
 
   private _finalizeShareableValue(ctx: FinalizeContext, value: SerProtocol.ShareableValue): SerProtocol.ShareableValue {
     if (Array.isArray(value)) {
-      const result = new Array(value.length);
+      const result = new Array<SerProtocol.Value>(value.length);
       for (let i = 0; i < value.length; ++i) {
         result[i] = this._finalizeProperty(ctx, value[i] as CircularValue);
       }
@@ -139,7 +139,7 @@ class SerializeInternalContext {
 
     return {
       $: refInfo.refIndex,
-    } as SerProtocol.Ref;
+    } satisfies SerProtocol.Ref;
   }
 }
 
@@ -179,7 +179,7 @@ function serializeValue(ctx: SerializeInternalContext, value: unknown, knownType
   case 'bigint':
     return {
       $: ['es.BigInt', value.toString()],
-    } as SerProtocol.CustomTypedObject;
+    };
   case 'object': {
     if (!value) {
       return value;
@@ -259,7 +259,7 @@ function serializeShareable(ctx: SerializeInternalContext, value: object, knownT
     return arr;
   }
 
-  return serializeObject(ctx, value as object, knownType, useSharedValue);
+  return serializeObject(ctx, value, knownType, useSharedValue);
 }
 
 function serializeObject(ctx: SerializeInternalContext, obj: object, knownType?: boolean, useSharedValue = true): CircularValue {

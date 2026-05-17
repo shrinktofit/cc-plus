@@ -189,4 +189,24 @@ describe('simplify', () => {
     ];
     expect(simplify(doc)).toEqual([{ items: [4, 5, 6] }]);
   });
+
+  it('handle ref of ref', () => {
+    const doc: Serialization.SerializedObject[] = [
+      { a: { __id__: 1 } },
+      { __id__: 2 },
+      { c: 42 },
+    ];
+    expect(simplify(doc)).toEqual(
+      [{ a: { c: 42 } }],
+    );
+  });
+
+  it('throw error in circular ref of ref', () => {
+    const doc: Serialization.SerializedObject[] = [
+      { a: { __id__: 1 } },
+      { __id__: 2 },
+      { __id__: 1 },
+    ];
+    expect(() => simplify(doc)).toThrow('Maximum call stack size exceeded');
+  });
 });

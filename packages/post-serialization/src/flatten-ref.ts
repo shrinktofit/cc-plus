@@ -30,13 +30,13 @@ class FlattenContext {
     return this._shareableValues;
   }
 
-  private _shareableValues: Array<Serialization.Value> = [];
+  private _shareableValues: Serialization.Value[] = [];
 
   private _shareableValueRecords = new Map<DerefSpace.ShareableValue, {
     ref: { __id__: number };
   }>();
 
-  private _queue: Array<DerefSpace.ShareableValue> = [];
+  private _queue: DerefSpace.ShareableValue[] = [];
 
   private _flattenImmediate(value: DerefSpace.ShareableValue): Serialization.Value {
     if (Array.isArray(value)) {
@@ -126,13 +126,13 @@ export declare namespace DerefSpace {
   export type Primitive = number | string | boolean | null;
   export type XArray = Value[];
   export type XObject = TypedObject | PlainObject;
-  export type TypedObject = {
+  export interface TypedObject {
     __type__: string;
     [x: string]: Value;
-  };
-  export type PlainObject = {
+  }
+  export interface PlainObject {
     [x: string]: Value;
-  };
+  }
   export type Value = Primitive | XArray | XObject;
   export type ShareableValue = XObject | XArray;
 }

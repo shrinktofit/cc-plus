@@ -29,9 +29,9 @@ export interface ClassCustomSerialization<T, TIntermediates = never> {
   decodeInto?: (ctx: DeserializeContext, input: TIntermediates, target: T) => void;
 }
 
-export type FieldTypeInlineSpecification = {
+export interface FieldTypeInlineSpecification {
   [key: string]: FieldTypeSpecification;
-};
+}
 
 export type FieldTypeSpecification = (new (...args: any[]) => any) | FieldTypeInlineSpecification;
 
@@ -53,7 +53,7 @@ export interface RegisteredClassMeta<T, TIntermediates = never> {
 
 export interface ClassMetaRegisterOptions<T, TIntermediates> {
   id: string;
-  fields?: Array<keyof T | [keyof T, FieldMeta]>;
+  fields?: (keyof T | [keyof T, FieldMeta])[];
   custom?: ClassCustomSerialization<T, TIntermediates>;
   nonShared?: true;
 }
@@ -78,7 +78,7 @@ export function getClassMetaById<T, TIntermediates>(id: string): RegisteredClass
   return classMetaRegistryById.get(id) as RegisteredClassMeta<T, TIntermediates> | undefined;
 }
 
-function normalizeFields<T>(fields: Array<keyof T | [keyof T, FieldMeta]>): Record<string, FieldMeta> {
+function normalizeFields<T>(fields: (keyof T | [keyof T, FieldMeta])[]): Record<string, FieldMeta> {
   const result: Record<string, FieldMeta> = {};
   for (const field of fields) {
     if (Array.isArray(field)) {

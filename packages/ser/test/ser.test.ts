@@ -214,7 +214,7 @@ it.each([
   ['Float64Array', new Float64Array([0.5, -1.5, Number.MAX_SAFE_INTEGER])],
   ['BigInt64Array', new BigInt64Array([-1n, 0n, 1n])],
   ['BigUint64Array', new BigUint64Array([0n, 1n, 18446744073709551615n])],
-] satisfies Array<[string, ArrayBufferView]>)('%s', (_, given) => {
+] satisfies [string, ArrayBufferView][])('%s', (_, given) => {
   const deserialized = expectSerializedSnapshotAndDeserialize(given);
 
   expect(deserialized).toBeInstanceOf(given.constructor);

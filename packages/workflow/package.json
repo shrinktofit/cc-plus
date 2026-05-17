@@ -5,8 +5,5 @@
   "type": "module",
   "exports": {
     "./tsconfig/*": "./tsconfig/*.json"
-  },
-  "devDependencies": {
-    "@types/node": "^22.15.17"
   }
 }

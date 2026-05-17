@@ -2,6 +2,7 @@
   "extends": "@cc-plus/workflow/tsconfig/lib",
   "include": ["src"],
   "compilerOptions": {
+    "target": "esnext",
     "rootDir": "src",
     "outDir": "lib",
     "skipLibCheck": true,

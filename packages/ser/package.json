@@ -3,10 +3,17 @@
   "version": "0.0.0",
   "type": "module",
   "files": [
-    "lib/**/*{.js,.d.ts}"
+    "lib/**",
+    "!lib/**/*.map"
   ],
   "exports": {
-    ".": "./lib/index.js"
+    ".": "./lib/index.js",
+    "./serialize": "./lib/serialize.js",
+    "./deserialize": "./lib/deserialize.js",
+    "./protocol": "./lib/protocol.js",
+    "./meta-registry": "./lib/meta-registry.js",
+    "./decorators": "./lib/decorators.js",
+    "./legacy-decorators": "./lib/legacy-decorators.js"
   },
   "scripts": {
     "test": "vitest run",

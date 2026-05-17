@@ -68,25 +68,25 @@ registerArrayBufferViewMeta(Float64Array, 'es.Float64Array');
 registerArrayBufferViewMeta(BigInt64Array, 'es.BigInt64Array', true);
 registerArrayBufferViewMeta(BigUint64Array, 'es.BigUint64Array', true);
 
-type TypedArray =
-  | Int8Array
-  | Uint8Array
-  | Uint8ClampedArray
-  | Int16Array
-  | Uint16Array
-  | Int32Array
-  | Uint32Array
-  | Float32Array
-  | Float64Array
-  | BigInt64Array
-  | BigUint64Array;
+type TypedArray
+  = | Int8Array
+    | Uint8Array
+    | Uint8ClampedArray
+    | Int16Array
+    | Uint16Array
+    | Int32Array
+    | Uint32Array
+    | Float32Array
+    | Float64Array
+    | BigInt64Array
+    | BigUint64Array;
 
 type TypedArrayElement<T extends TypedArray> = T extends BigInt64Array | BigUint64Array ? bigint : number;
 type TypedArrayConstructor<T extends TypedArray> = new (values: ArrayLike<TypedArrayElement<T>>) => T;
 type SerializedTypedArrayElement<T extends TypedArray> = T extends BigInt64Array | BigUint64Array ? number | string : number;
 
 function registerArrayBufferViewMeta<T extends TypedArray>(constructor: TypedArrayConstructor<T>, id: string, bigintElements = false) {
-  registerClassMeta<T, Array<SerializedTypedArrayElement<T>>>(constructor, {
+  registerClassMeta<T, SerializedTypedArrayElement<T>[]>(constructor, {
     id,
     custom: {
       encode: (_, value) => Array.from(value as unknown as ArrayLike<TypedArrayElement<T>>, (element) => {
@@ -97,8 +97,8 @@ function registerArrayBufferViewMeta<T extends TypedArray>(constructor: TypedArr
       }),
       decode: (_, input) => new constructor(
         bigintElements
-          ? input.map((element) => BigInt(element)) as Array<TypedArrayElement<T>>
-          : input as Array<TypedArrayElement<T>>,
+          ? input.map((element) => BigInt(element)) as TypedArrayElement<T>[]
+          : input as TypedArrayElement<T>[],
       ),
     },
   });

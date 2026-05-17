@@ -96,9 +96,7 @@ class DeserializeInternalContext {
       return info.target;
     }
 
-    if (!info.target) {
-      info.target = this._createTarget(info.source, fixedConstructor);
-    }
+    info.target ??= this._createTarget(info.source, fixedConstructor);
 
     info.populated = true;
     const populatedTarget = this._populateTarget(info.source, info.target, fixedConstructor);

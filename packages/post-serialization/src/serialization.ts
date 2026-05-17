@@ -4,16 +4,16 @@ declare namespace Serialization {
   export type SerializedPrimitive = number | string | boolean | null;
   export type SerializedArray = Value[];
   export type SerializedObject = SerializedTypedObject | SerializedPlainObject;
-  export type SerializedTypedObject = {
+  export interface SerializedTypedObject {
     __type__: string;
     [x: string]: Value;
-  };
-  export type SerializedPlainObject = {
+  }
+  export interface SerializedPlainObject {
     [x: string]: Value;
-  };
-  export type SerializedReference = {
+  }
+  export interface SerializedReference {
     __id__: number;
-  };
+  }
   export type Value = SerializedPrimitive | SerializedArray | SerializedObject | SerializedReference;
   export type SerializedDocument = SerializedPrimitive | SerializedObject | SerializedObject[];
   export type ShareableValue = SerializedObject | SerializedArray;

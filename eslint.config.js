@@ -1,5 +1,3 @@
-// @ts-check
-
 import { defineConfig, globalIgnores } from 'eslint/config';
 import stf from '@shrinktofit/eslint-config';
 import node from '@shrinktofit/eslint-config/node';
@@ -8,13 +6,13 @@ export default defineConfig([
   {
     settings: {
       node: {
-        version: '>=22.17.0',
+        version: '>=24.0.0',
       },
     },
   },
   globalIgnores([
     'node_modules',
-    'packages/*/lib',
+    'packages/**/lib',
   ]),
   stf.configs.recommended,
   node.configs.recommended,
@@ -25,10 +23,6 @@ export default defineConfig([
         projectService: {
           allowDefaultProject: [
             'env.d.ts',
-            'eslint.config.js',
-            'vitest.workspace.ts',
-            'packages/*/vite.config.ts',
-            'packages/*/vitest.config.ts',
           ],
         },
       },
