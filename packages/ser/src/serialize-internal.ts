@@ -53,19 +53,35 @@ class SerializeInternalContext {
     };
   }
 
+  addSerializingSharedValue(original: object) {
+    this._sharedValues.set(original, null);
+  }
+
   addSharedValue(original: object, value: SerProtocol.ShareableValue) {
     this._sharedValues.set(original, value);
   }
 
+  removeSharedValue(original: object) {
+    this._sharedValues.delete(original);
+  }
+
   getSharedValue(original: object) {
+    if (!this._sharedValues.has(original)) {
+      return undefined;
+    }
+
     const sharedValue = this._sharedValues.get(original);
+    if (sharedValue === null) {
+      throw new Error('Circular reference in constructor parameters is not supported');
+    }
+
     if (sharedValue) {
       return sharedValue;
     }
     return undefined;
   }
 
-  private _sharedValues: Map<object, SerProtocol.ShareableValue> = new Map();
+  private _sharedValues: Map<object, SerProtocol.ShareableValue | null> = new Map();
 
   private _countRefs(ctx: FinalizeContext, value: CircularValue) {
     if (typeof value !== 'object' || !value) {
@@ -285,10 +301,10 @@ function serializeObject(ctx: SerializeInternalContext, obj: object, knownType?:
     return trySerializeCCObject(ctx, obj, constructor);
   }
 
-  const custom = meta.custom;
+  const custom = meta.custom ?? getInstanceCustomSerialization(obj);
   // If the class has custom handlers, run it.
   if (custom) {
-    const encodeResult = custom.encode(serializeContext, obj);
+    const encodeResult = encodeCustomObject(custom, obj);
     // Also serialize the result.
     const serializedEncodeResult = serializeValue(ctx, encodeResult, false);
     if (knownType) {
@@ -308,15 +324,29 @@ function serializeObject(ctx: SerializeInternalContext, obj: object, knownType?:
 
   // Otherwise, we do the default serialization.
   const fields = meta.fields;
-  // If not specified, the register() should has handled it.
-  invariant(fields);
-
   const result: SerProtocol.TypedObject = {};
-  if (!knownType) {
+  const constructorParameters = getInstanceConstructorParameters(obj);
+  if (constructorParameters) {
+    ctx.addSerializingSharedValue(obj);
+    const parameters = constructorParameters(serializeContext);
+    if (!Array.isArray(parameters)) {
+      throw new Error(`Constructor parameters for type ${meta.id} must be an array`);
+    }
+    result.$ = [
+      meta.id,
+      ...parameters.map((parameter) => serializeValue(ctx, parameter, false)),
+    ];
+  } else if (!knownType) {
     result.$ = meta.id;
   }
   if (useSharedValue) {
     ctx.addSharedValue(obj, result);
+  }
+  if (!fields) {
+    if (constructorParameters && !useSharedValue) {
+      ctx.removeSharedValue(obj);
+    }
+    return result;
   }
   for (const [fieldKey, fieldMeta] of Object.entries(fields)) {
     const fieldValue = Reflect.get(obj, fieldKey);
@@ -329,7 +359,40 @@ function serializeObject(ctx: SerializeInternalContext, obj: object, knownType?:
     }
     result[fieldKey] = serializeValue(ctx, fieldValue, fieldMeta.fixed === true);
   }
+  if (constructorParameters && !useSharedValue) {
+    ctx.removeSharedValue(obj);
+  }
   return result;
+}
+
+function getInstanceCustomSerialization(obj: object) {
+  if (!isInstanceSerializable(obj)) {
+    return undefined;
+  }
+
+  return {
+    encode: (ctx: SerializeContext) => obj[SerProtocol.serialize](ctx),
+  };
+}
+
+function encodeCustomObject(custom: { encode: (ctx: SerializeContext, value: object) => unknown }, obj: object) {
+  return custom.encode(serializeContext, obj);
+}
+
+function isInstanceSerializable(obj: object): obj is object & Required<Pick<SerProtocol.Serializable<any, any>, typeof SerProtocol.serialize>> {
+  return typeof (obj as Partial<SerProtocol.Serializable<any, any>>)[SerProtocol.serialize] === 'function';
+}
+
+function getInstanceConstructorParameters(obj: object) {
+  if (!isConstructorParameterSerializable(obj)) {
+    return undefined;
+  }
+
+  return (ctx: SerializeContext) => obj[SerProtocol.constructorParameters](ctx);
+}
+
+function isConstructorParameterSerializable(obj: object): obj is object & Required<Pick<SerProtocol.Serializable<any, any>, typeof SerProtocol.constructorParameters>> {
+  return typeof (obj as Partial<SerProtocol.Serializable<any, any>>)[SerProtocol.constructorParameters] === 'function';
 }
 
 function shouldUseSharedValue(value: object) {

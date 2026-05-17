@@ -43,7 +43,7 @@ The `$` field is reserved by the protocol. Its meaning is determined by shape:
 | --- | --- | --- |
 | `{ "$": 0 }` | Reference to `sharedValues[0]` | `{ "$": 0 }` |
 | `{ "$": "type.id", ... }` | Typed object with fields | `{ "$": "game.Player", "level": 3 }` |
-| `{ "$": ["type.id", payload] }` | Custom typed object | `{ "$": ["es.Date", 1778938200000] }` |
+| `{ "$": ["type.id", ...values] }` | Custom payload or constructor parameters, depending on the registered type | `{ "$": ["es.Date", 1778938200000] }` |
 | `{ "$": "intrinsic.*" }` | Intrinsic marker | `{ "$": "intrinsic.nan" }` |
 
 Do not use `$` as an application data field in plain objects that need to be deserialized unambiguously.
@@ -77,6 +77,59 @@ registerClassMeta(Player, {
   fields: ['name', 'level'],
 });
 ```
+
+Classes can also keep custom serialization logic on the class itself. Registering metadata still provides the stable type id:
+
+```ts
+class A implements SerProtocol.Serializable<typeof A, string> {
+  value = '';
+
+  [SerProtocol.serialize]() {
+    return this.value;
+  }
+
+  [SerProtocol.deserializeInto](_ctx: SerProtocol.DeserializeContext, input: string) {
+    this.value = input;
+  }
+}
+
+registerClassMeta(A, {
+  id: 'game.A',
+});
+```
+
+This produces the same custom typed object shape as `custom.encode` / `custom.decodeInto`, but lets the class own its serialization behavior.
+
+Classes that need constructor arguments during deserialization can expose them with `SerProtocol.constructorParameters`:
+
+```ts
+class PlayerSession implements SerProtocol.Serializable<typeof PlayerSession> {
+  note = '';
+
+  constructor(public sessionId = '') {
+  }
+
+  [SerProtocol.constructorParameters]() {
+    return [this.sessionId] as [string];
+  }
+}
+
+registerClassMeta(PlayerSession, {
+  id: 'game.PlayerSession',
+  fields: ['note'],
+});
+```
+
+This serializes constructor parameters into the `$` tuple and keeps regular fields beside it:
+
+```ts
+{
+  "$": ["game.PlayerSession", "session-1"],
+  "note": "ready"
+}
+```
+
+`SerProtocol.constructorParameters` must return an array. The returned values are recursively serialized. If those values contain a circular reference back to the object whose constructor parameters are being serialized, serialization throws because the object cannot be constructed before its own constructor arguments are available.
 
 Use `fixed: true` for fields whose runtime type is invariant. This omits nested type information. For object fields, the deserializer infers the fixed type from the field's current runtime value after constructing the owning object, so no explicit `type` is needed:
 

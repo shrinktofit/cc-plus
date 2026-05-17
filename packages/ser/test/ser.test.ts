@@ -246,6 +246,108 @@ it('registered class fields', () => {
   expect(deserialized.ignored).toBe('default');
 });
 
+it('registered class can define custom serialization methods', () => {
+  class LocalSerializable implements SerProtocol.Serializable<typeof LocalSerializable, string> {
+    value = '';
+
+    [SerProtocol.serialize]() {
+      return this.value.toUpperCase();
+    }
+
+    [SerProtocol.deserializeInto](_: SerProtocol.DeserializeContext, input: string) {
+      this.value = input.toLowerCase();
+    }
+  }
+
+  registerClassMeta(LocalSerializable, {
+    id: 'test.LocalSerializable',
+  });
+
+  const given = new LocalSerializable();
+  given.value = 'hello';
+
+  const deserialized = expectSerializedSnapshotAndDeserialize(given) as LocalSerializable;
+
+  expect(deserialized).toBeInstanceOf(LocalSerializable);
+  expect(deserialized.value).toBe('hello');
+});
+
+it('registered class can define constructor parameters', () => {
+  class ConstructorSerializable implements SerProtocol.Serializable<typeof ConstructorSerializable> {
+    constructor(public name = '', public level = 0) {
+    }
+
+    [SerProtocol.constructorParameters]() {
+      return [this.name, this.level] as [string, number];
+    }
+  }
+
+  registerClassMeta(ConstructorSerializable, {
+    id: 'test.ConstructorSerializable',
+  });
+
+  const given = new ConstructorSerializable('Ada', 7);
+  const deserialized = expectSerializedSnapshotAndDeserialize(given) as ConstructorSerializable;
+
+  expect(deserialized).toBeInstanceOf(ConstructorSerializable);
+  expect(deserialized.name).toBe('Ada');
+  expect(deserialized.level).toBe(7);
+});
+
+it('registered class can combine constructor parameters with fields', () => {
+  class ConstructorWithFields implements SerProtocol.Serializable<typeof ConstructorWithFields> {
+    note = '';
+
+    constructor(public id = '') {
+    }
+
+    [SerProtocol.constructorParameters]() {
+      return [this.id] as [string];
+    }
+  }
+
+  registerClassMeta(ConstructorWithFields, {
+    id: 'test.ConstructorWithFields',
+    fields: ['note'],
+  });
+
+  const given = new ConstructorWithFields('session-1');
+  given.note = 'ready';
+  const deserialized = expectSerializedSnapshotAndDeserialize(given) as ConstructorWithFields;
+
+  expect(deserialized).toBeInstanceOf(ConstructorWithFields);
+  expect(deserialized.id).toBe('session-1');
+  expect(deserialized.note).toBe('ready');
+});
+
+it('constructor parameters must be an array', () => {
+  class InvalidConstructorParameters {
+    [SerProtocol.constructorParameters]() {
+      return 'not-array';
+    }
+  }
+
+  registerClassMeta(InvalidConstructorParameters, {
+    id: 'test.InvalidConstructorParameters',
+  });
+
+  expect(() => serialize(new InvalidConstructorParameters())).toThrowErrorMatchingSnapshot();
+});
+
+it('constructor parameters cannot contain circular references to the same object', () => {
+  class CircularConstructorParameters {
+    [SerProtocol.constructorParameters]() {
+      return [this];
+    }
+  }
+
+  registerClassMeta(CircularConstructorParameters, {
+    id: 'test.CircularConstructorParameters',
+  });
+
+  expect(() => serialize(new CircularConstructorParameters())).toThrowErrorMatchingSnapshot();
+});
+
 it('fixed registered class field omits nested type info', () => {
   class Point {
     x = 0;

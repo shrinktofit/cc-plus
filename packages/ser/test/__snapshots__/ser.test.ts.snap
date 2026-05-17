@@ -364,6 +364,10 @@ exports[`circular value 1`] = `
 }
 `;
 
+exports[`constructor parameters cannot contain circular references to the same object 1`] = `[Error: Circular reference in constructor parameters is not supported]`;
+
+exports[`constructor parameters must be an array 1`] = `[Error: Constructor parameters for type test.InvalidConstructorParameters must be an array]`;
+
 exports[`finite number 1`] = `
 {
   "value": 123.5,
@@ -475,6 +479,44 @@ exports[`plain object omits undefined fields 1`] = `
 {
   "value": {
     "keep": 1,
+  },
+  "version": "202605",
+}
+`;
+
+exports[`registered class can combine constructor parameters with fields 1`] = `
+{
+  "value": {
+    "$": [
+      "test.ConstructorWithFields",
+      "session-1",
+    ],
+    "note": "ready",
+  },
+  "version": "202605",
+}
+`;
+
+exports[`registered class can define constructor parameters 1`] = `
+{
+  "value": {
+    "$": [
+      "test.ConstructorSerializable",
+      "Ada",
+      7,
+    ],
+  },
+  "version": "202605",
+}
+`;
+
+exports[`registered class can define custom serialization methods 1`] = `
+{
+  "value": {
+    "$": [
+      "test.LocalSerializable",
+      "HELLO",
+    ],
   },
   "version": "202605",
 }

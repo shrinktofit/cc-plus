@@ -1,6 +1,9 @@
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace SerProtocol {
   export const VERSION = '202605';
+  export const serialize = Symbol.for('cc-plus.ser.serialize');
+  export const deserializeInto = Symbol.for('cc-plus.ser.deserializeInto');
+  export const constructorParameters = Symbol.for('cc-plus.ser.constructorParameters');
 
   /**
    * Document that can be serialized and deserialized.
@@ -24,7 +27,7 @@ export namespace SerProtocol {
     /**
      * Type of the object. If omitted, the object's type should be inferred from runtime.
      */
-    $?: string;
+    $?: string | [string, ...Value[]];
 
     /**
      * Object fields.
@@ -46,5 +49,19 @@ export namespace SerProtocol {
    */
   export interface Ref {
     $: number;
+  }
+
+  export interface SerializeContext {
+
+  }
+
+  export interface DeserializeContext {
+
+  }
+
+  export interface Serializable<TValue extends abstract new (...args: any[]) => any, TIntermediates = unknown> {
+    [serialize]?(ctx: SerializeContext): TIntermediates;
+    [deserializeInto]?(ctx: DeserializeContext, input: TIntermediates): void;
+    [constructorParameters]?(ctx: SerializeContext): ConstructorParameters<TValue>;
   }
 }

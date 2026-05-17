@@ -1,6 +1,6 @@
 import './register-builtin-meta.js';
 import invariant from 'tiny-invariant';
-import { getClassMeta, getClassMetaById, type FieldMeta, type SerializeContext } from './meta-registry.js';
+import { getClassMeta, getClassMetaById, type DeserializeContext, type FieldMeta } from './meta-registry.js';
 import { SerProtocol } from './protocol.js';
 
 interface SharedValueInfo {
@@ -47,14 +47,13 @@ class DeserializeInternalContext {
     invariant(meta, 'Fixed field type must be registered');
 
     const custom = meta.custom;
-    if (custom) {
+    if (custom || isInstanceDeserializable(fixedRuntimeValue)) {
       const input = this.deserializeValue(value) as never;
-      if (custom.decode) {
+      if (custom?.decode) {
         return custom.decode(deserializeContext, input);
       }
       const target = new constructor();
-      invariant(custom.decodeInto, `Type ${meta.id} does not support custom deserialization`);
-      custom.decodeInto(deserializeContext, input, target as never);
+      this._decodeIntoTarget(meta.id, custom, target, input);
       return target;
     }
 
@@ -66,8 +65,13 @@ class DeserializeInternalContext {
       return this._deserializeSharedValue(value.$, constructor);
     }
 
-    const target = new constructor();
-    this._populateObjectFields(value, target, meta.fields);
+    const target = isCustomTypedObject(value) && !usesCustomTypedObject(constructor, meta)
+      ? this._createRegisteredTarget(constructor, getSerializedConstructorParameters(value))
+      : new constructor();
+    const fieldsSource = isCustomTypedObject(value)
+      ? omitTypeField(value)
+      : value;
+    this._populateObjectFields(fieldsSource, target, meta.fields);
     return target;
   }
 
@@ -122,10 +126,13 @@ class DeserializeInternalContext {
     if (isCustomTypedObject(value)) {
       const registered = getClassMetaById(value.$[0]);
       invariant(registered, `Unknown type id: ${value.$[0]}`);
-      if (registered.meta.custom?.decode) {
-        return undefined;
+      if (usesCustomTypedObject(registered.constructor, registered.meta)) {
+        if (registered.meta.custom?.decode) {
+          return undefined;
+        }
+        return new registered.constructor();
       }
-      return new registered.constructor();
+      return this._createRegisteredTarget(registered.constructor, getSerializedConstructorParameters(value));
     }
 
     if (isTypedObject(value)) {
@@ -159,13 +166,18 @@ class DeserializeInternalContext {
     if (isCustomTypedObject(source)) {
       const registered = getClassMetaById(source.$[0]);
       invariant(registered, `Unknown type id: ${source.$[0]}`);
+      if (!usesCustomTypedObject(registered.constructor, registered.meta)) {
+        const fieldsSource = omitTypeField(source);
+        this._populateObjectFields(fieldsSource, target, registered.meta.fields);
+        return;
+      }
+
       const custom = registered.meta.custom;
       const input = this.deserializeValue(source.$[1]) as never;
       if (custom?.decode) {
         return custom.decode(deserializeContext, input);
       }
-      invariant(custom?.decodeInto, `Type ${source.$[0]} does not support custom deserialization`);
-      custom.decodeInto(deserializeContext, input, target as never);
+      this._decodeIntoTarget(source.$[0], custom, target, input);
       return;
     }
 
@@ -185,10 +197,25 @@ class DeserializeInternalContext {
     }
   }
 
+  private _createRegisteredTarget(constructor: new (...args: any[]) => any, serializedParameters: SerProtocol.Value[]) {
+    const parameters = serializedParameters.map((parameter) => this.deserializeValue(parameter));
+    return new constructor(...parameters);
+  }
+
+  private _decodeIntoTarget(typeId: string, custom: { decodeInto?: (ctx: DeserializeContext, input: never, target: never) => void } | undefined, target: unknown, input: never) {
+    if (custom?.decodeInto) {
+      custom.decodeInto(deserializeContext, input, target as never);
+      return;
+    }
+
+    invariant(isInstanceDeserializable(target), `Type ${typeId} does not support custom deserialization`);
+    target[SerProtocol.deserializeInto](deserializeContext, input);
+  }
+
   private readonly _sharedValues: SharedValueInfo[];
 }
 
-const deserializeContext: SerializeContext = {};
+const deserializeContext: DeserializeContext = {};
 
 export function deserialize(document: SerProtocol.Document): unknown {
   if (document.version !== SerProtocol.VERSION) {
@@ -211,9 +238,13 @@ function isTypedObject(value: object): value is SerProtocol.TypedObject & { $: s
   return typeof (value as { $?: unknown }).$ === 'string';
 }
 
-function isCustomTypedObject(value: object): value is SerProtocol.CustomTypedObject {
+function isCustomTypedObject(value: object): value is SerProtocol.TypedObject & { $: [string, ...SerProtocol.Value[]] } {
   const typeInfo = (value as { $?: unknown }).$;
-  return Array.isArray(typeInfo) && typeInfo.length === 2 && typeof typeInfo[0] === 'string';
+  return Array.isArray(typeInfo) && typeof typeInfo[0] === 'string';
+}
+
+function getSerializedConstructorParameters(value: SerProtocol.TypedObject & { $: [string, ...SerProtocol.Value[]] }): SerProtocol.Value[] {
+  return value.$.slice(1) as SerProtocol.Value[];
 }
 
 function omitTypeField(value: SerProtocol.TypedObject): Record<string, SerProtocol.Value> {
@@ -254,4 +285,12 @@ function isIntrinsicValue(id: string) {
   return id === 'intrinsic.nan'
     || id === 'intrinsic.inf'
     || id === 'intrinsic.-inf';
+}
+
+function isInstanceDeserializable(value: unknown): value is object & Required<Pick<SerProtocol.Serializable<any, any>, typeof SerProtocol.deserializeInto>> {
+  return isObject(value) && typeof (value as Partial<SerProtocol.Serializable<any, any>>)[SerProtocol.deserializeInto] === 'function';
+}
+
+function usesCustomTypedObject(constructor: new (...args: any[]) => any, meta: { custom?: unknown }) {
+  return !!meta.custom || typeof constructor.prototype?.[SerProtocol.deserializeInto] === 'function';
 }

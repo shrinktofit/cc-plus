@@ -1,3 +1,5 @@
+import type { SerProtocol } from './protocol.js';
+
 export interface ClassMeta<T, TIntermediates = never> {
   /**
    * Class ID.
@@ -23,8 +25,8 @@ export interface ClassMeta<T, TIntermediates = never> {
 
 export interface ClassCustomSerialization<T, TIntermediates = never> {
   encode: (ctx: SerializeContext, value: T) => TIntermediates;
-  decode?: (ctx: SerializeContext, input: TIntermediates) => T;
-  decodeInto?: (ctx: SerializeContext, input: TIntermediates, target: T) => void;
+  decode?: (ctx: DeserializeContext, input: TIntermediates) => T;
+  decodeInto?: (ctx: DeserializeContext, input: TIntermediates, target: T) => void;
 }
 
 export type FieldTypeInlineSpecification = {
@@ -88,6 +90,5 @@ function normalizeFields<T>(fields: Array<keyof T | [keyof T, FieldMeta]>): Reco
   return result;
 }
 
-export interface SerializeContext {
-
-}
+export type SerializeContext = SerProtocol.SerializeContext;
+export type DeserializeContext = SerProtocol.DeserializeContext;
